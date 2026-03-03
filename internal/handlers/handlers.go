@@ -11,7 +11,7 @@ import (
 )
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
-	path, err := filepath.Abs("../index.html")
+	path, err := filepath.Abs("index.html")
 	if err != nil {
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
