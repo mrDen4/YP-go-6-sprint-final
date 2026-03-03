@@ -4,28 +4,31 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/Yandex-Practicum/go1fl-sprint6-final/internal/service"
 )
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
-	data, err := os.ReadFile("index.html")
+	path, err := filepath.Abs("../index.html")
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
 	}
 
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.Write(data)
+	http.ServeFile(w, r, path)
 }
 
 func UploadHandler(w http.ResponseWriter, r *http.Request) {
-	r.ParseMultipartForm(10 << 20)
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		http.Error(w, "Invalid multipart form", http.StatusBadRequest)
+		return
+	}
 
 	file, _, err := r.FormFile("myFile")
 	if err != nil {
-		http.Error(w, "File not found", http.StatusBadRequest)
+		http.Error(w, "File not found", http.StatusInternalServerError)
 		return
 	}
 	defer file.Close()
@@ -46,7 +49,11 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer out.Close()
 
-	_, err = out.WriteString(string(newData))
+	if _, err = out.WriteString(newData); err != nil {
+		http.Error(w, "cannot write file", http.StatusInternalServerError)
+		return
+	}
 
+	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(string(newData)))
 }

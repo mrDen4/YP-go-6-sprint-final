@@ -2,6 +2,7 @@ package service
 
 import (
 	"strings"
+	"unicode"
 
 	"github.com/Yandex-Practicum/go1fl-sprint6-final/pkg/morse"
 )
@@ -9,20 +10,23 @@ import (
 func isMorse(str string) bool {
 	str = strings.TrimSpace(str)
 
-	if str == "" {
+	// if str == "" {
+	// 	return false
+	// }
+
+	// allowed := ".- /"
+
+	// if !strings.ContainsAny(str, ".-") {
+	// 	return false
+	// }
+
+	// for _, r := range str {
+	// 	if !strings.ContainsRune(allowed, r) {
+	// 		return false
+	// 	}
+	// }
+	if strings.ContainsFunc(str, unicode.IsLetter) {
 		return false
-	}
-
-	allowed := ".- /"
-
-	if !strings.ContainsAny(str, ".-") {
-		return false
-	}
-
-	for _, r := range str {
-		if !strings.ContainsRune(allowed, r) {
-			return false
-		}
 	}
 
 	return true
