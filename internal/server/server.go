@@ -3,7 +3,6 @@ package server
 import (
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/Yandex-Practicum/go1fl-sprint6-final/internal/handlers"
@@ -15,7 +14,7 @@ type Server struct {
 	http   *http.Server
 }
 
-func newServer(logger *log.Logger) *Server {
+func New(logger *log.Logger) *Server {
 	r := chi.NewRouter()
 
 	r.Get("/", handlers.IndexHandler)
@@ -35,14 +34,11 @@ func newServer(logger *log.Logger) *Server {
 	}
 }
 
-func Main() {
-	logger := log.New(os.Stdout, "[server]", log.LstdFlags)
+func (s *Server) Start() error {
+	s.logger.Println("Server is starting on :8080")
 
-	server := newServer(logger)
-
-	logger.Println("Server is starting on :8080")
-
-	if err := server.http.ListenAndServe(); err != nil {
-		logger.Fatalf("server error: %v", err)
+	if err := s.http.ListenAndServe(); err != nil {
+		return err
 	}
+	return nil
 }
